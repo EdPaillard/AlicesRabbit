@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  client:
+    build:
+      dockerfile: Dockerfile
+      context: "./AlicesRabbit-front"
+    ports:
+      - "80:80"
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: "./AlicesRabbit-back"
+    ports:
+      - "4000:4000"
+    depends_on: 
+      - psqldb
+  
+  psqldb:
+    image: postgres:14.5
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${PSQLPASS} #postgres
+      POSTGRES_USER: ${PSQLUSER} #postgres
+      POSTGRES_DB: ${PSQLDB} #alices_rabbit_dev
+    ports:
+      - 5432:5432
+    volumes:
+      - psqldb_data:/var/lib/postgresql/data
+volumes:
+  psqldb_data:

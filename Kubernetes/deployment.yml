@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alicesrabbit-client-deploy
+  labels:
+    app: alicesrabbit-client
+  namespace: alicesrabbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alicesrabbit-client
+  template:
+    metadata:
+      labels:
+        app: alicesrabbit-client
+    spec:
+      containers:
+      - name: alicesrabbit-client
+        image: 162.19.66.30:7000/alicesrabbit_client:kube-lts
+        ports:
+        - containerPort: 80
+        env:
+          - name: BACKEND_URL
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: backend_url
+          - name: BACKEND_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: backend_port
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alicesrabbit-server-deploy
+  labels:
+    app: alicesrabbit-server
+  namespace: alicesrabbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alicesrabbit-server
+  template:
+    metadata:
+      labels:
+        app: alicesrabbit-server
+    spec:
+      containers:
+      - name: alicesrabbit-server
+        image: 162.19.66.30:7000/alicesrabbit_server:kube-lts
+        ports:
+        - containerPort: 4000
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: alicesrabbit-secret
+                key: psql_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: alicesrabbit-secret
+                key: psql_password
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_dbname
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_host
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_port
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alicesrabbit-postgres
+  labels:
+    app: alicesrabbit-postgres
+  namespace: alicesrabbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alicesrabbit-postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: alicesrabbit-postgres
+    spec:
+      containers:
+      - name: alicesrabbit-postgres
+        image: postgres:14.5
+        ports:
+          - containerPort: 3306
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: alicesrabbit-secret
+                key: psql_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: alicesrabbit-secret
+                key: psql_password
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_dbname
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_host
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_port
+        volumeMounts:
+        - mountPath: "/var/lib/postgresql/alicesrabbit/data"
+          name: alicesrabbit-pv
+      volumes:
+        - name: alicesrabbit-pv
+          persistentVolumeClaim:
+            claimName: alicesrabbit-pvc

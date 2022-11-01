@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alicesrabbit-configmap
+  namespace: alicesrabbit
+data:
+  psql_dbname: alices_rabbit_dev
+  psql_host: alicesrabbit-postgres-service
+  psql_port: '5432'
+  backend_url: '162.19.66.30'
+  backend_port: '4000'

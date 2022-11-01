@@ -1,0 +1,55 @@
+defmodule AlicesRabbitWeb.Router do
+  use AlicesRabbitWeb, :router
+
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
+  scope "/api", AlicesRabbitWeb do
+    pipe_through :api
+    resources "/users", UsersController, except: [:new, :edit]
+
+    scope "/clocks" do
+      get "/:users_id", ClocksController, :show
+      post "/:users_id", ClocksController, :create
+      put "/:users_id/:id", ClocksController, :update
+      delete "/:id", ClocksController, :delete
+    end
+
+    scope "/workingtimes" do
+      resources "/", WorkingtimesController, only: [:delete, :update]
+      get "/:users_id", WorkingtimesController, :show_all
+      get "/:users_id/:id", WorkingtimesController, :show
+      post "/:users_id", WorkingtimesController, :create
+    end
+  end
+
+  # Enables LiveDashboard only for development
+  #
+  # If you want to use the LiveDashboard in production, you should put
+  # it behind authentication and allow only admins to access it.
+  # If your application does not have an admins-only section yet,
+  # you can use Plug.BasicAuth to set up some basic authentication
+  # as long as you are also using SSL (which you should anyway).
+  if Mix.env() in [:dev, :test] do
+    import Phoenix.LiveDashboard.Router
+
+    scope "/" do
+      pipe_through [:fetch_session, :protect_from_forgery]
+
+      live_dashboard "/dashboard", metrics: AlicesRabbitWeb.Telemetry
+    end
+  end
+
+  # Enables the Swoosh mailbox preview in development.
+  #
+  # Note that preview only shows emails that were sent by the same
+  # node running the Phoenix server.
+  if Mix.env() == :dev do
+    scope "/dev" do
+      pipe_through [:fetch_session, :protect_from_forgery]
+
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+  end
+end

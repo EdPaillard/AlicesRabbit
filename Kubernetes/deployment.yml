@@ -15,6 +15,10 @@ spec:
       labels:
         app: alicesrabbit-client
     spec:
+      hostAliases:
+        - ip: "162.19.66.30"
+          hostnames:
+            - "alicesrabbit.eu"
       containers:
       - name: alicesrabbit-client
         image: 162.19.66.30:7000/alicesrabbit_client:kube-lts

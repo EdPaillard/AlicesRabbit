@@ -59,3 +59,5 @@ spec:
     services:
     - name: alicesrabbit-client-service
       port: 80
+  tls:
+    secretName: alices-secret-tls

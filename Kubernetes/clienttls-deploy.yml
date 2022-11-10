@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alicesrabbit-server-tls
+  labels:
+    app: alicesrabbit-server-tls
+  namespace: alicesrabbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alicesrabbit-server-tls
+  template:
+    metadata:
+      labels:
+        app: alicesrabbit-server-tls
+    spec:
+      containers:
+      - name: alicesrabbit-server-tls
+        image: 162.19.66.30:7000/alicesrabbit_server:kube-tls
+        ports:
+        - containerPort: 4001
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: alicesrabbit-secret
+                key: psql_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: alicesrabbit-secret
+                key: psql_password
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_dbname
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_host
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: alicesrabbit-configmap
+                key: psql_port

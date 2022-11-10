@@ -55,7 +55,7 @@ spec:
     - websecure
   routes:
   - kind: Rule
-    match: Host(`alicesrabbit-client.162.19.66.30`)
+    match: Host(`alicesrabbit.eu`)
     services:
     - name: alicesrabbit-client-service
       port: 80

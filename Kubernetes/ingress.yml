@@ -1,24 +1,24 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: alicesrabbit-client-ingress
-  labels:
-    app: ingress
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-  namespace: alicesrabbit
-spec:
-  rules:
-  - host: alicesrabbit.eu
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: alicesrabbit-client-service
-            port: 
-              number: 80
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: alicesrabbit-client-ingress
+#   labels:
+#     app: ingress
+#   annotations:
+#     traefik.ingress.kubernetes.io/router.entrypoints: web
+#   namespace: alicesrabbit
+# spec:
+#   rules:
+#   - host: alicesrabbit.eu
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: alicesrabbit-client-service
+#             port: 
+#               number: 80
 
 # ---
 # apiVersion: networking.k8s.io/v1
@@ -42,3 +42,20 @@ spec:
 #             name: alicesrabbit-server-service
 #             port: 
 #               number: 4000
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: alicesrabbit
+  namespace: alicesrabbit
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`alicesrabbit.162.19.66.30`)
+    services:
+    - name: alicesrabbit-client-service
+      port: 80

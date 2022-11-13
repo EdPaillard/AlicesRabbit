@@ -53,7 +53,7 @@ spec:
     spec:
       containers:
       - name: alicesrabbit-server
-        image: 162.19.66.30:7000/alicesrabbit_server:kube-v1.0
+        image: 162.19.66.30:7000/alicesrabbit_server:kube-v1.1
         ports:
         - containerPort: 4000
         env:

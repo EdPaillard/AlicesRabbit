@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: alicesrabbit-client
-        image: 162.19.66.30:7000/alicesrabbit_client:kube-lts
+        image: 162.19.66.30:7000/alicesrabbit_client:kube-v1.0
         ports:
         - containerPort: 80
         env:
